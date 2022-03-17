@@ -1,0 +1,1 @@
+export const fragment_shader_2d_300es = "#version 300 es\r\n\r\n\r\n\r\nprecision highp float;\r\nout vec4 outColor;\r\nuniform vec4 u_color;\r\n\r\nvoid main() {\r\n \r\n \r\n outColor = u_color;\r\n}\r\n\r\n"

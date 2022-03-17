@@ -1,0 +1,1 @@
+export const vertex_shader_2d_300es = "#version 300 es\r\n\r\n\r\nin vec4 a_position;\r\n\r\n\r\n\r\nvoid main() {\r\n \r\n \r\n \r\n gl_Position = a_position;\r\n}\r\n\r\n"

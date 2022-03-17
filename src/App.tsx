@@ -7,6 +7,7 @@ import {
   Route,
 } from "react-router-dom";
 import Tuto1 from './experiments/tuto1';
+import Tuto2 from './experiments/tuto2';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/tuto1" element={<Tuto1></Tuto1>} />
+          <Route path="/tuto2" element={<Tuto2></Tuto2>} />
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
         </Routes>
