@@ -25,7 +25,6 @@ function App() {
           Learn React
         </a>
         </header>*/}
-      <canvas id="c" width="200" height="100"></canvas>
       <Router>
         <Routes>
           <Route path="/tuto1" element={<Tuto1></Tuto1>} />
