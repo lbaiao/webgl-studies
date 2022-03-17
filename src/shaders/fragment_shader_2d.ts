@@ -1,0 +1,1 @@
+export const fragment_shader_2d = "\r\n\r\n\r\n\r\nprecision mediump float;\r\nuniform vec4 u_color;\r\n\r\nvoid main() {\r\n \r\n \r\n gl_FragColor = u_color;\r\n}\r\n\r\n"
