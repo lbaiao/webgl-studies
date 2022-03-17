@@ -1,1 +1,0 @@
-export const vertex-shader-2d = "#version 300 es\r\n\r\n\r\nattribute vec4 a_position;\r\nuniform vec4 u_scale;\r\n\r\n\r\nvoid main() {\r\n \r\n \r\n \r\n \r\n}\r\n\r\n"
