@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from "react";
 import { Slider, Typography } from "@material-ui/core";
-import { Method } from "@testing-library/react";
 
 type Props = {
     step: number,
@@ -76,7 +75,7 @@ export default class TestSlider extends React.Component<Props, State> {
                     max={this.max}
                     name={this.name}
                     onChange={(e, val) => this.handleChange(e, val as number)}
-                    className="my-slider"
+                    onChangeCommitted={(e, val) => this.handleChange(e, val as number)}
                     track={false}
                     scale={this.scale}
                 />
