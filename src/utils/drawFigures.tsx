@@ -51,6 +51,39 @@ export function drawRectangle(
     return true;
 }
 
+export function setRectangle(
+    gl: WebGL2RenderingContext,    
+    args: Array<number>,
+): boolean {
+    var x = args[0];
+    var y = args[1];
+    var width = args[2];
+    var height = args[3];
+    var positions = [
+        x, y,
+        x + width, y,
+        x + width, y + height,
+        x, y,
+        x, y + height,
+        x + width, y + height,
+    ];
+
+    // check if the coordinates are valid
+    var validArgs = false;
+    var sum = 0
+    args.forEach(x => {
+        sum += validateNumber(x) ? 1 : 0;
+    });
+    validArgs = sum == 4;
+    if (!validArgs) {
+        return false;
+    }
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    return true;
+}
+
 function validateNumber(x: number) {
     return x < 1 && x > -1;
 }

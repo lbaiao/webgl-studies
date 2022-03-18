@@ -10,6 +10,7 @@ import Tuto1 from './experiments/tuto1';
 import Tuto2 from './experiments/tuto2';
 import Tuto3 from './experiments/tuto3';
 import Tuto4 from './experiments/tuto4';
+import Tuto5 from './experiments/tuto5';
 
 function App() {
   return (
@@ -39,8 +40,11 @@ function App() {
           {/* draw random rectangles using webgl2.0 */}
           <Route path="/tuto3" element={<Tuto3></Tuto3>} />
 
-          {/* apply translation to a rectangle */}
+          {/* apply translation to a rectangle using JS */}
           <Route path="/tuto4" element={<Tuto4></Tuto4>} />
+
+          {/* apply translation to a rectangle using the vertex shader */}
+          <Route path="/tuto5" element={<Tuto5></Tuto5>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
