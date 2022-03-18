@@ -39,6 +39,7 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
   var positionBuffer = gl.createBuffer();
 
   // Create a vertex array object (attribute state)
+  // what is this object used for??? it seems to be useless
   var vao = gl.createVertexArray() as WebGLVertexArrayObject;
 
   // Bind the attribute/buffer set we want.
@@ -102,6 +103,8 @@ function draw(stuff: WebGLStuff) {
   gl.useProgram(stuff.program);
 
   // Bind the attribute/buffer set we want.
+  // this vertexArray seems to be useless. I am leaving it
+  // here just to be sure.
   gl.bindVertexArray(stuff.vertexArray);
 
   // Set the color.
