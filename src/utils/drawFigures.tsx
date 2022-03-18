@@ -54,7 +54,7 @@ export function drawRectangle(
 export function setRectangle(
     gl: WebGL2RenderingContext,    
     args: Array<number>,
-): boolean {
+) {
     var x = args[0];
     var y = args[1];
     var width = args[2];
@@ -75,13 +75,9 @@ export function setRectangle(
         sum += validateNumber(x) ? 1 : 0;
     });
     validArgs = sum == 4;
-    if (!validArgs) {
-        return false;
+    if (validArgs) {
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     }
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-    return true;
 }
 
 function validateNumber(x: number) {
