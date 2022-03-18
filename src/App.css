@@ -43,3 +43,7 @@ canvas {
   display: block;
 }
 
+#my-slider {
+  position: relative;
+  z-index: 99;
+}
