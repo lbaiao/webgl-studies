@@ -94,10 +94,8 @@ function main() {
 
   // draw
   var primitiveType = gl.TRIANGLES;
-  var offset = 0;
   var count = 3;
   const N_TRIANGLES = 4;
-  const SCALE = 3;
 
   for (var i = 0; i < N_TRIANGLES; i++) {
     var positions = [];
