@@ -43,7 +43,19 @@ canvas {
   display: block;
 }
 
-#my-slider {
-  position: relative;
-  z-index: 99;
+.canvas-div {
+  float: left;
+  margin-left: 2%;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  width: 78%;
+  height: 96%;
 }
+
+.sliders-div {
+  float: right;
+  z-index: 99;  
+  width: 18%;
+  margin-right: 2%;
+}
+
