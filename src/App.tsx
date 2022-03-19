@@ -11,6 +11,7 @@ import Tuto2 from './experiments/tuto2';
 import Tuto3 from './experiments/tuto3';
 import Tuto4 from './experiments/tuto4';
 import Tuto5 from './experiments/tuto5';
+import Tuto6 from './experiments/tuto6';
 
 function App() {
   return (
@@ -45,6 +46,9 @@ function App() {
 
           {/* apply translation to a rectangle using the vertex shader */}
           <Route path="/tuto5" element={<Tuto5></Tuto5>} />
+
+          {/* apply rotation to a F-shaped figure */}
+          <Route path="/tuto6" element={<Tuto6></Tuto6>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
