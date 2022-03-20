@@ -70,7 +70,7 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
   // set translation
   gl.uniform4fv(translationLocation, [0, 0, 0, 0]);
   // gl.uniform1f(rotationLocation, 0);
-  gl.uniform1f(rotationLocation, 0);  
+  gl.uniform1f(rotationLocation, 0);
 
 
   // set rectangle vertices
@@ -259,7 +259,7 @@ export default class Tuto6 extends React.Component<Props, State> {
       <div>
         <div className='canvas-div'>
           <Canvas xTranslation={this.state.xTranslation} yTranslation={this.state.yTranslation}
-           thetaRotation={this.state.thetaRotation} ref={this.canvas}
+            thetaRotation={this.state.thetaRotation} ref={this.canvas}
           ></Canvas>
         </div>
         <div className='sliders-div'>

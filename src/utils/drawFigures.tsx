@@ -81,34 +81,38 @@ export function setRectangle(
 }
 
 export function setFFigure(gl: WebGL2RenderingContext) {
+    var coords = [
+        // 150 = .2
+        // left column
+        0, 0,
+        .04, 0,
+        0, -.2,
+        0, -.2,
+        .04, 0,
+        .04, -.2,
+
+        // top rung
+        .04, 0,
+        .133, 0,
+        .04, -.04,
+        .04, -.04,
+        .133, 0,
+        .133, -.04,
+
+        // middle rung
+        .04, -.08,
+        .09, -.08,
+        .04, -.12,
+        .04, -.12,
+        .09, -.08,
+        .09, -.12,
+    ];
+
+    var scaled = coords.map(x => x * 2);
+
     gl.bufferData(
         gl.ARRAY_BUFFER,
-        new Float32Array([
-            // 150 = .2
-            // left column
-            0, 0,
-            .04, 0,
-            0, -.2,
-            0, -.2,
-            .04, 0,
-            .04, -.2,
-  
-            // top rung
-            .04, 0,
-            .133, 0,
-            .04, -.04,
-            .04, -.04,
-            .133, 0,
-            .133, -.04,
-  
-            // middle rung
-            .04, -.08,
-            .09, -.08,
-            .04, -.12,
-            .04, -.12,
-            .09, -.08,
-            .09, -.12,
-        ]),
+        new Float32Array(scaled),
         gl.STATIC_DRAW);
   }
 
