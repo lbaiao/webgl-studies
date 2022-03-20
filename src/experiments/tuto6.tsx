@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { fragment_shader_2d_300es } from '../shaders/fragment_shader_2d_300es';
-import { vertex_shader_2d_300es_translation } from '../shaders/vertex_shader_2d_300es_translation';
+import { vertex_shader_2d_300es_rotation } from '../shaders/vertex_shader_2d_300es_rotation';
 import { resizeCanvasToDisplaySize, createProgram, createShader } from '../utils/webglUtils';
 import { setFFigure } from '../utils/drawFigures';
 import TestSlider from '../components/slider';
@@ -15,12 +15,13 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
       positionAttributeLocation: 0,
       colorLocation: new WebGLUniformLocation,
       translationLocation: new WebGLUniformLocation,
+      rotationLocation: new WebGLUniformLocation,
       vertexArray: new WebGLVertexArrayObject,
     };
   }
 
   // Get the strings for our GLSL shaders
-  var vertexShaderSource = vertex_shader_2d_300es_translation;
+  var vertexShaderSource = vertex_shader_2d_300es_rotation;
   var fragmentShaderSource = fragment_shader_2d_300es;
 
   // create GLSL shaders, upload the GLSL source, compile the shaders
@@ -34,6 +35,7 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
   var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
   var colorLocation = gl.getUniformLocation(program, "u_color") as WebGLUniformLocation;
   var translationLocation = gl.getUniformLocation(program, "u_translation") as WebGLUniformLocation;
+  var rotationLocation = gl.getUniformLocation(program, "u_rotation") as WebGLUniformLocation;
 
   // Create a buffer and put three 2d clip space points in it
   var positionBuffer = gl.createBuffer();
@@ -67,6 +69,9 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
 
   // set translation
   gl.uniform4fv(translationLocation, [0, 0, 0, 0]);
+  // gl.uniform1f(rotationLocation, 0);
+  gl.uniform1f(rotationLocation, 0);  
+
 
   // set rectangle vertices
   setFFigure(gl);
@@ -83,6 +88,7 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
     positionAttributeLocation: positionAttributeLocation,
     colorLocation: colorLocation,
     translationLocation: translationLocation,
+    rotationLocation: rotationLocation,
     vertexArray: vao
   }
   return stuff;
@@ -124,6 +130,7 @@ type WebGLStuff = {
   positionAttributeLocation: number,
   colorLocation: WebGLUniformLocation,
   translationLocation: WebGLUniformLocation,
+  rotationLocation: WebGLUniformLocation,
   vertexArray: WebGLVertexArrayObject,
 }
 
@@ -137,6 +144,7 @@ type PointerParams = {
 type CanvasProps = {
   xTranslation: number,
   yTranslation: number,
+  thetaRotation: number,
 }
 
 type CanvasState = {
@@ -172,7 +180,7 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     if (this.webGLStuff !== undefined) {
       draw(this.webGLStuff);
     }
-    this.setState({stuff: this.webGLStuff});
+    // this.setState({ stuff: this.webGLStuff });
   }
 
   translate(gl: WebGL2RenderingContext, translationLocation: WebGLUniformLocation, coords: Array<number>) {
@@ -181,11 +189,18 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     gl.uniform4fv(translationLocation, translation);
   }
 
-  updateCanvas() {    
+  rotate(gl: WebGL2RenderingContext, rotationLocation: WebGLUniformLocation, theta: number) {
+    var rad = theta / 180 * Math.PI;
+    gl.uniform1f(rotationLocation, rad);
+  }
+
+  updateCanvas() {
     this.setState({ xPosition: this.props.xTranslation, yPosition: this.props.yTranslation });
-    if (this.webGLStuff !== undefined) {      
-      this.translate(this.state.stuff.gl, this.state.stuff.translationLocation, [this.props.xTranslation, this.props.yTranslation]);
-      draw(this.state.stuff);
+    if (this.webGLStuff !== undefined) {
+      this.rotate(this.webGLStuff.gl, this.webGLStuff.rotationLocation, this.props.thetaRotation);
+      this.translate(this.webGLStuff.gl, this.webGLStuff.translationLocation, [this.props.xTranslation, this.props.yTranslation]);
+      // draw(this.state.stuff);
+      draw(this.webGLStuff);
     }
   }
 
@@ -203,6 +218,7 @@ type Props = {};
 type State = {
   xTranslation: number,
   yTranslation: number,
+  thetaRotation: number,
 }
 
 export default class Tuto6 extends React.Component<Props, State> {
@@ -211,7 +227,7 @@ export default class Tuto6 extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { xTranslation: 0, yTranslation: 0 };
+    this.state = { xTranslation: 0, yTranslation: 0, thetaRotation: 0 };
 
     // this.handleSliderChange = this.handleSliderChange.bind(this);
     this.canvas = React.createRef();
@@ -221,12 +237,18 @@ export default class Tuto6 extends React.Component<Props, State> {
     if (val === null || this.canvas.current === null) {
       return;
     }
-    if (coord === 'x') {
-      this.setState({ xTranslation: val });
-      // update canvas
-    }
-    else if (coord === 'y') {
-      this.setState({ yTranslation: val });
+    switch (coord) {
+      case 'x':
+        this.setState({ xTranslation: val });
+        break;
+      case 'y':
+        this.setState({ yTranslation: val });
+        break;
+      case 'theta':
+        this.setState({ thetaRotation: val })
+        break;
+      default:
+        break;
     }
 
     this.canvas.current.updateCanvas();
@@ -236,14 +258,19 @@ export default class Tuto6 extends React.Component<Props, State> {
     return (
       <div>
         <div className='canvas-div'>
-        <Canvas xTranslation={this.state.xTranslation} yTranslation={this.state.yTranslation} ref={this.canvas}></Canvas>
-        </div>        
+          <Canvas xTranslation={this.state.xTranslation} yTranslation={this.state.yTranslation}
+           thetaRotation={this.state.thetaRotation} ref={this.canvas}
+          ></Canvas>
+        </div>
         <div className='sliders-div'>
-          <TestSlider min={0} max={100} step={0.01} name="x position"
+          <TestSlider min={-1} max={1} step={0.01} name="x position"
             onChange={(val: number) => this.handleSliderChange(val, 'x')}
           />
-          <TestSlider min={0} max={100} step={0.01} name="y position"
+          <TestSlider min={-1} max={1} step={0.01} name="y position"
             onChange={(val: number) => this.handleSliderChange(val, 'y')}
+          />
+          <TestSlider min={0} max={360} step={0.01} name="theta"
+            onChange={(val: number) => this.handleSliderChange(val, 'theta')}
           />
         </div>
       </div>
