@@ -168,13 +168,17 @@ export default class Tuto4 extends React.Component<Props, State> {
   render(): JSX.Element {
     return (
       <div>
+        <div className='canvas-div'>
         <Canvas xPosition={this.state.xPosition} yPosition={this.state.yPosition} ref={this.canvas}></Canvas>
-        <TestSlider min={0} max={100} step={0.01} name="x position"
-          onChange={(val: number) => this.handleSliderChange(val, 'x')}
-        />
-        <TestSlider min={0} max={100} step={0.01} name="y position"
-          onChange={(val: number) => this.handleSliderChange(val, 'y')}
-        />
+        </div>        
+        <div className='sliders-div'>
+          <TestSlider min={-1} max={1} step={0.01} name="x position"
+            onChange={(val: number) => this.handleSliderChange(val, 'x')}
+          />
+          <TestSlider min={-1} max={1} step={0.01} name="y position"
+            onChange={(val: number) => this.handleSliderChange(val, 'y')}
+          />
+        </div>
       </div>
     );
   }

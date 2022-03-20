@@ -239,10 +239,10 @@ export default class Tuto5 extends React.Component<Props, State> {
     return (
       <div>
         <Canvas xTranslation={this.state.xTranslation} yTranslation={this.state.yTranslation} ref={this.canvas}></Canvas>
-        <TestSlider min={0} max={100} step={0.01} name="x position"
+        <TestSlider min={-1} max={1} step={0.01} name="x position"
           onChange={(val: number) => this.handleSliderChange(val, 'x')}
         />
-        <TestSlider min={0} max={100} step={0.01} name="y position"
+        <TestSlider min={1} max={-1} step={0.01} name="y position"
           onChange={(val: number) => this.handleSliderChange(val, 'y')}
         />
       </div>

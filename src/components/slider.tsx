@@ -18,6 +18,7 @@ type State = {
 export default class TestSlider extends React.Component<Props, State> {
     min: number;
     max: number;
+    diff: number;
     step: number;
     name: string;
     onChange: Function;
@@ -27,6 +28,7 @@ export default class TestSlider extends React.Component<Props, State> {
 
         this.max = props.max;
         this.min = props.min;
+        this.diff = this.max - this.min;
         this.name = props.name;
         this.step = props.step;
         this.onChange = props.onChange;
@@ -55,8 +57,7 @@ export default class TestSlider extends React.Component<Props, State> {
         if (val === null) {
             return 0;
         }
-        var aux = (this.max - this.min) / 2;
-        var scaled = val / aux - 1;
+        var scaled = val / 100 * this.diff + this.min;
         return scaled;
     }
 
@@ -72,7 +73,7 @@ export default class TestSlider extends React.Component<Props, State> {
                     valueLabelDisplay="auto"
                     step={this.step}
                     min={0}
-                    max={this.max}
+                    max={100}
                     name={this.name}
                     onChange={(e, val) => this.handleChange(e, val as number)}
                     onChangeCommitted={(e, val) => this.handleChange(e, val as number)}
