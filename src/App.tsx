@@ -12,6 +12,7 @@ import Tuto3 from './experiments/tuto3';
 import Tuto4 from './experiments/tuto4';
 import Tuto5 from './experiments/tuto5';
 import Tuto6 from './experiments/tuto6';
+import Tuto7 from './experiments/tuto7';
 
 function App() {
   return (
@@ -49,6 +50,9 @@ function App() {
 
           {/* apply rotation to a F-shaped figure */}
           <Route path="/tuto6" element={<Tuto6></Tuto6>} />
+
+          {/* fixed the scale problem */}
+          <Route path="/tuto7" element={<Tuto7></Tuto7>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
