@@ -13,6 +13,7 @@ import Tuto4 from './experiments/tuto4';
 import Tuto5 from './experiments/tuto5';
 import Tuto6 from './experiments/tuto6';
 import Tuto7 from './experiments/tuto7';
+import Tuto8 from './experiments/tuto8';
 
 function App() {
   return (
@@ -53,6 +54,9 @@ function App() {
 
           {/* fixed the scale problem */}
           <Route path="/tuto7" element={<Tuto7></Tuto7>} />
+
+          {/* scaling */}
+          <Route path="/tuto8" element={<Tuto8></Tuto8>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
