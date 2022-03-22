@@ -14,6 +14,7 @@ import Tuto5 from './experiments/tuto5';
 import Tuto6 from './experiments/tuto6';
 import Tuto7 from './experiments/tuto7';
 import Tuto8 from './experiments/tuto8';
+import Tuto9 from './experiments/tuto9';
 
 function App() {
   return (
@@ -57,6 +58,9 @@ function App() {
 
           {/* scaling */}
           <Route path="/tuto8" element={<Tuto8></Tuto8>} />
+
+          {/* matrix */}
+          <Route path="/tuto9" element={<Tuto9></Tuto9>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />

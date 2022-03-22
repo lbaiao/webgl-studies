@@ -1,9 +1,11 @@
 import React from 'react';
 import { fragment_shader_2d_300es } from '../shaders/fragment_shader_2d_300es';
-import { vertex_shader_2d_300es_scaling } from '../shaders/vertex_shader_2d_300es_scaling';
+import { vertex_shader_2d_300es_matrix } from '../shaders/vertex_shader_2d_300es_matrix';
 import { resizeCanvasToDisplaySize, createProgram, createShader } from '../utils/webglUtils';
 import { setFFigure } from '../utils/drawFigures';
 import TestSlider from '../components/slider';
+import { mat3 } from '../matrix/mat3';
+import { degToRad } from '../utils/mathUtils';
 
 
 function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): WebGLStuff {
@@ -13,16 +15,14 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
       gl: new WebGL2RenderingContext(),
       program: new WebGLProgram(),
       positionAttributeLocation: 0,
-      colorLocation: new WebGLUniformLocation,
-      translationLocation: new WebGLUniformLocation,
-      rotationLocation: new WebGLUniformLocation,
-      scaleLocation: new WebGLUniformLocation,
-      vertexArray: new WebGLVertexArrayObject,
+      colorLocation: new WebGLUniformLocation(),
+      matrixLocation: new WebGLUniformLocation(),
+      vao: new WebGLVertexArrayObject(),
     };
   }
 
   // Get the strings for our GLSL shaders
-  var vertexShaderSource = vertex_shader_2d_300es_scaling;
+  var vertexShaderSource = vertex_shader_2d_300es_matrix;
   var fragmentShaderSource = fragment_shader_2d_300es;
 
   // create GLSL shaders, upload the GLSL source, compile the shaders
@@ -34,11 +34,11 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
 
   // look up where the vertex data needs to go.
   var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-  var colorLocation = gl.getUniformLocation(program, "u_color") as WebGLUniformLocation;
-  var translationLocation = gl.getUniformLocation(program, "u_translation") as WebGLUniformLocation;
-  var rotationLocation = gl.getUniformLocation(program, "u_rotation") as WebGLUniformLocation;
+  var matrixLocation = gl.getUniformLocation(program, "u_matrix") as WebGLUniformLocation;
   var fixXScaleLocation = gl.getUniformLocation(program, "u_fixXScale") as WebGLUniformLocation;
-  var scaleLocation = gl.getUniformLocation(program, "u_scale") as WebGLUniformLocation;
+
+  // look up where fragment data should go
+  var colorLocation = gl.getUniformLocation(program, "u_color") as WebGLUniformLocation;
 
   // Create a buffer and put three 2d clip space points in it
   var positionBuffer = gl.createBuffer();
@@ -70,11 +70,15 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
   // Tell it to use our program (pair of shaders)
   gl.useProgram(program);
 
+  // origin
+  var fixTranslationX = gl.canvas.width / gl.canvas.height;  // multiply the translation by the inverse of the scale fix
+  var moveOrigin = mat3.translationMatrix(.06, .04, fixTranslationX);
+
   // set uniforms
-  gl.uniform4fv(translationLocation, [0, 0, 0, 0]);
-  gl.uniform1f(rotationLocation, 0);
+  var matrix = new mat3();
+  matrix.multiply(moveOrigin);
+  gl.uniformMatrix3fv(matrixLocation, false, matrix);
   gl.uniform1f(fixXScaleLocation, gl.canvas.height / gl.canvas.width);
-  gl.uniform2fv(scaleLocation, [1, 1]);
   var color = [Math.random(), Math.random(), .5, 1];
   gl.uniform4fv(colorLocation, color);
 
@@ -85,17 +89,15 @@ function setupWebGL(gl: WebGL2RenderingContext, pointerParams: PointerParams): W
     gl.FLOAT, pointerParams.normalize,
     pointerParams.stride, pointerParams.offset
   );
-  // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
 
+  // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
   const stuff: WebGLStuff = {
     gl: gl,
     program: program,
     positionAttributeLocation: positionAttributeLocation,
+    matrixLocation: matrixLocation,
     colorLocation: colorLocation,
-    translationLocation: translationLocation,
-    rotationLocation: rotationLocation,
-    scaleLocation: scaleLocation,
-    vertexArray: vao
+    vao: vao,
   }
   return stuff;
 }
@@ -115,9 +117,7 @@ function draw(stuff: WebGLStuff) {
   gl.useProgram(stuff.program);
 
   // Bind the attribute/buffer set we want.
-  // this vertexArray seems to be useless. I am leaving it
-  // here just to be sure.
-  // gl.bindVertexArray(stuff.vertexArray);
+  gl.bindVertexArray(stuff.vao);
 
   // Draw the geometry.
   var primitiveType = gl.TRIANGLES;
@@ -131,10 +131,8 @@ type WebGLStuff = {
   program: WebGLProgram
   positionAttributeLocation: number,
   colorLocation: WebGLUniformLocation,
-  translationLocation: WebGLUniformLocation,
-  rotationLocation: WebGLUniformLocation,
-  scaleLocation: WebGLUniformLocation,
-  vertexArray: WebGLVertexArrayObject,
+  matrixLocation: WebGLUniformLocation,
+  vao: WebGLVertexArrayObject,
 }
 
 type PointerParams = {
@@ -152,8 +150,7 @@ type CanvasProps = {
 
 type CanvasState = {
   stuff: WebGLStuff,
-  xPosition: number,
-  yPosition: number,
+  translation: Array<number>,
 }
 
 class Canvas extends React.Component<CanvasProps, CanvasState> {
@@ -164,7 +161,7 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
   constructor(props: CanvasProps) {
     super(props);
 
-    this.setState({ xPosition: props.translation[0], yPosition: props.translation[1] });
+    this.setState({ translation: this.props.translation });
     this.canvas = React.createRef();
     this.pointerParams = {
       size: 2,
@@ -201,15 +198,49 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     gl.uniform2fv(loc, values);
   }
 
+  // positionMatrix(): mat3 {
+  //   var posMatrix = new mat3();
+
+  //   return posMatrix;
+  // }
+
+  translationMatrix(arr: Array<number>): mat3 {
+    var tMatrix = new mat3();
+    tMatrix[6] = arr[0];
+    tMatrix[7] = arr[1];
+
+    return tMatrix;
+  }
+
   updateCanvas() {
-    this.setState({ xPosition: this.props.translation[1], yPosition: this.props.translation[1] });
+    this.setState({ translation: this.props.translation });
     if (this.webGLStuff !== undefined) {
-      this.rotate(this.webGLStuff.gl, this.webGLStuff.rotationLocation, this.props.thetaRotation);
-      this.translate(this.webGLStuff.gl, this.webGLStuff.translationLocation, this.props.translation);
-      this.scale(this.webGLStuff.gl, this.webGLStuff.scaleLocation, this.props.scaling);
+      // this.rotate(this.webGLStuff.gl, this.webGLStuff.rotationLocation, this.props.thetaRotation);
+      // this.translate(this.webGLStuff.gl, this.webGLStuff.translationLocation, this.props.translation);
+      // this.scale(this.webGLStuff.gl, this.webGLStuff.scaleLocation, this.props.scaling);
       // draw(this.state.stuff);
+
+      this.matrixCalculations(this.webGLStuff.gl, this.webGLStuff.matrixLocation);
+
       draw(this.webGLStuff);
     }
+  }
+
+  matrixCalculations(gl: WebGL2RenderingContext, matrixLoc: WebGLUniformLocation) {
+    // setup matrices
+    var rad = degToRad(this.props.thetaRotation);
+    var rotation = mat3.rotationMatrix(rad);
+    var fixTranslationX = gl.canvas.width / gl.canvas.height;  // multiply the translation by the inverse of the scale fix
+    var translation = mat3.translationMatrix(this.props.translation[0], this.props.translation[1], fixTranslationX);
+    var scaling = mat3.scalingMatrix(this.props.scaling[0], this.props.scaling[1]);
+    var moveOrigin = mat3.translationMatrix(.06, .04, fixTranslationX);
+
+    // matrix multiplication
+    var matrix = translation.multiply(rotation);
+    matrix = matrix.multiply(scaling);
+    matrix = matrix.multiply(moveOrigin);
+
+    gl.uniformMatrix3fv(matrixLoc, false, matrix);
   }
 
   render(): React.ReactNode {
@@ -229,7 +260,7 @@ type State = {
   scaling: Array<number>,
 }
 
-export default class Tuto8 extends React.Component<Props, State> {
+export default class Tuto9 extends React.Component<Props, State> {
   canvas: React.RefObject<Canvas>;
 
   constructor(props: Props) {
