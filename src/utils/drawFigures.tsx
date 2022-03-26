@@ -116,6 +116,42 @@ export function setFFigure(gl: WebGL2RenderingContext) {
         gl.STATIC_DRAW);
   }
 
+export function setFFigure3D(gl: WebGL2RenderingContext) {
+    var coords = [
+        // 150 = .2
+        // left column
+        0, 0, 0,
+        .04, 0, 0,
+        0, -.2, 0,
+        0, -.2, 0,
+        .04, 0, 0,
+        .04, -.2, 0,
+
+        // top rung
+        .04, 0, 0,
+        .133, 0, 0,
+        .04, -.04, 0,
+        .04, -.04, 0,
+        .133, 0, 0,
+        .133, -.04, 0,
+
+        // middle rung
+        .04, -.08, 0,
+        .09, -.08, 0,
+        .04, -.12, 0,
+        .04, -.12, 0,
+        .09, -.08, 0,
+        .09, -.12, 0,
+    ];
+
+    var scaled = coords.map(x => x * 2);
+
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array(scaled),
+        gl.STATIC_DRAW);
+  }
+
 function validateNumber(x: number) {
     return x < 1 && x > -1;
 }

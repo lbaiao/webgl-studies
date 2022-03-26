@@ -15,6 +15,7 @@ import Tuto6 from './experiments/tuto6';
 import Tuto7 from './experiments/tuto7';
 import Tuto8 from './experiments/tuto8';
 import Tuto9 from './experiments/tuto9';
+import Tuto10 from './experiments/tuto10';
 
 function App() {
   return (
@@ -61,6 +62,9 @@ function App() {
 
           {/* matrix */}
           <Route path="/tuto9" element={<Tuto9></Tuto9>} />
+
+          {/* 3D */}
+          <Route path="/tuto10" element={<Tuto10></Tuto10>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
