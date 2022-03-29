@@ -140,7 +140,7 @@ type State = {
   scaling: Array<number>,
 }
 
-export default class Tuto10 extends React.Component<Props, State> {
+export default class Tuto11 extends React.Component<Props, State> {
   canvas: React.RefObject<Canvas>;
 
   constructor(props: Props) {
