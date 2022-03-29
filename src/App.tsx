@@ -16,6 +16,7 @@ import Tuto7 from './experiments/tuto7';
 import Tuto8 from './experiments/tuto8';
 import Tuto9 from './experiments/tuto9';
 import Tuto10 from './experiments/tuto10';
+import Tuto11 from './experiments/tuto11';
 
 function App() {
   return (
@@ -65,6 +66,9 @@ function App() {
 
           {/* 3D */}
           <Route path="/tuto10" element={<Tuto10></Tuto10>} />
+
+          {/* three js hello cube */}
+          <Route path="/tuto11" element={<Tuto11></Tuto11>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />
