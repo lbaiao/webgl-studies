@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {resizeCanvasToDisplaySize} from '../utils/webglUtils';
 import Box from '../utils/box';
 import BoxUtils from '../utils/boxUtils';
-import Octree from '../utils/octree';
+import Octree, { NodeType } from '../utils/octree';
 import OctreeUtils from '../utils/octreeUtils';
 import { tests } from '../tests/tests';
 
@@ -55,6 +55,7 @@ class Canvas extends React.Component<Props, CanvasState> {
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.z = 50;
     camera.updateProjectionMatrix();
+
     return camera; 
   }
 
@@ -89,7 +90,15 @@ class Canvas extends React.Component<Props, CanvasState> {
     const regionMesh = OctreeUtils.RegionToThree(octree);
     const octantMeshes = OctreeUtils.OctantsToThree(octree);
     const octants = octree.getAllOctantsList();
-    const octEdges = octants.map(x => BoxUtils.BoxEdges(x.region));
+    octants.push(octree);
+    const octEdges = octants
+      .filter(x => x.nodeType !== NodeType.EMPTY)
+      .map(x => BoxUtils.BoxEdges(x.region));
+
+
+    const regionOcts = octants.filter(x => x.nodeType === NodeType.LEAF);
+    const regionMeshes = regionOcts.map(x => BoxUtils.BoxEdges(x.region));
+    console.log(regionOcts);
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 0, 0);
@@ -99,6 +108,8 @@ class Canvas extends React.Component<Props, CanvasState> {
     //scene.add(regionMesh);
     //octantMeshes.forEach(x => scene.add(x));
     octEdges.forEach(x => scene.add(x));
+    //regionMeshes.forEach(x => scene.add(x));
+    //scene.add(regionMeshes[2]);
     scene.add(light);
 
     function renderAnimation() {

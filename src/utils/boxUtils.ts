@@ -38,6 +38,10 @@ export default class BoxUtils {
       new Box([10, 3, 0], 2, 1, 4),
       new Box([2, 4, 1], 1, 10, 3),
       new Box([5, 12, 0], 2, 2, 14),
+      new Box([1, 0, 12], 1, 1, 1),
+      new Box([0, 0, 8], 1, 1, 1),
+      new Box([0, 3, 8], 1, 1, 1),
+      new Box([10, 0, 12], 1, 1, 1),
     ];
   }
 }

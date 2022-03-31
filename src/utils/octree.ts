@@ -12,7 +12,7 @@ type Octants = {
   t3: Octree,
 }
 
-enum NodeType {
+export enum NodeType {
   EMPTY = 0,
   LEAF = 1,
   REGION = 2,
@@ -106,10 +106,10 @@ export default class Octree {
       t3: new Octree(t3),
     };
 
-    this.getOctantsList().forEach(x => x.parent = this);
+    this.getChildrenOctantsList().forEach(x => x.parent = this);
   }
 
-  getOctantsList() {
+  getChildrenOctantsList() {
     let octants: Octree[] = [];
     if (this.childrenOctants !== undefined) {
       octants = [
@@ -130,21 +130,18 @@ export default class Octree {
   getAllOctantsList() {
     const octants: Octree[] = [];
 
-    const childrenOctants = this.getOctantsList();
-    childrenOctants.forEach(x => octants.push(x));
-
-    if (this.childrenOctants !== undefined) {
-      childrenOctants.forEach(x => {
-        let octs = x.getOctantsList();
-        octs.forEach(y => octants.push(y));
-      });
-    }
+    const childrenOctants = this.getChildrenOctantsList();
+    childrenOctants.forEach(x => {
+      octants.push(x);
+      let octs = x.getAllOctantsList();
+      octs.forEach(y => octants.push(y));
+    });
 
     return octants;
   }
 
   handleLeafInsertion(box: Box) {
-    if (this.region.width / 2 <= this.minSize) {
+    if (this.region.width / 2 < this.minSize) {
       this.objects.push(box);
       return;
     }
@@ -154,7 +151,7 @@ export default class Octree {
     }
 
     this.makeOctants();
-    const childrenOctants = this.getOctantsList();
+    const childrenOctants = this.getChildrenOctantsList();
 
     // deal with firstObject
     const firstObject = this.objects[0];
@@ -185,7 +182,7 @@ export default class Octree {
   }
 
   handleRegionInsertion(box: Box) {
-    const childrenOctants = this.getOctantsList();
+    const childrenOctants = this.getChildrenOctantsList();
 
     let boxAssigned = false;
     for (let i = 0; i < 8; i++) {

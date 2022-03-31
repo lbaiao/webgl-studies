@@ -21,7 +21,7 @@ export default class OctreeUtils {
       return [];
     }
 
-    const regions = octree.getOctantsList().map(x => x.region);
+    const regions = octree.getChildrenOctantsList().map(x => x.region);
     const material = new THREE.MeshPhongMaterial({
       color: 0xFFaa88,
       transparent: true,
