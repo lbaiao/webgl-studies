@@ -1,3 +1,6 @@
+import { vecGreaterOrEqual } from './mathUtils';
+
+
 // 0 ------ 3
 // |        |
 // 1 ------ 2
@@ -19,9 +22,11 @@ export default class Box {
   depth: number = 0;
   width: number = 0;
   center: number[] = [];
-  vertices!: BoxVertices;
+  vertices: BoxVertices;
 
   constructor(p: number[], width: number, depth: number, height: number) {
+    this.vertices = {b0: [], b1: [], b2: [], b3: [], t0: [], t1: [], t2: [], t3: []};
+
     if (p.length !== 3
       || width <= 0
       || depth <= 0
@@ -61,6 +66,37 @@ export default class Box {
     this.vertices = vertices;
   }
 
+  public static fromPoints(b0: number[], t2: number[]) {
+    if (t2[0] <= b0[0]
+      || t2[1] <= b0[1]
+      || t2[2] <= b0[2]) {
+      return new Box([0, 0, 0], 0, 0, 0);
+    }
+
+    let width = t2[0] - b0[0];
+    let depth = t2[1] - b0[1];
+    let height = t2[2] - b0[2];
+
+    const box = new Box(b0, width, depth, height);
+    return box;
+  }
+
+  contains(box: Box) {
+    return vecGreaterOrEqual(box.vertices.b0, this.vertices.b0)
+      && vecGreaterOrEqual(this.vertices.t2, box.vertices.t2);
+  }
+
+  intersectAABB(boxA: Box, boxB: Box) : boolean {
+    const aMin = boxA.vertices.b0;
+    const aMax = boxA.vertices.t2;
+    const bMin = boxB.vertices.b0;
+    const bMax = boxB.vertices.t2;
+
+    return (aMin[0] <= bMax[0] && aMax[0] >= bMin[0]) &&
+      (aMin[1] <= bMax[1] && aMax[1] >= bMin[1]) &&
+      (aMin[2] <= bMax[2] && aMax[2] >= bMin[2]);
+  }
+
   //public static randomBox(
     //minX: number, minY: number,
     //minZ: number, maxX: number,
@@ -71,3 +107,4 @@ export default class Box {
   //) {
   //}
 }
+

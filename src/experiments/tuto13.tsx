@@ -2,7 +2,11 @@ import React from 'react';
 import { OrbitControls } from '../utils/OrbitControls';
 import * as THREE from 'three';
 import {resizeCanvasToDisplaySize} from '../utils/webglUtils';
-import { BoxToThree, scenario1 } from '../utils/boxUtils';
+import Box from '../utils/box';
+import BoxUtils from '../utils/boxUtils';
+import Octree from '../utils/octree';
+import OctreeUtils from '../utils/octreeUtils';
+import { tests } from '../tests/tests';
 
 
 type CanvasState = {
@@ -44,16 +48,12 @@ class Canvas extends React.Component<Props, CanvasState> {
   }
 
   setupCamera(canvas: HTMLCanvasElement) {
-    console.log(canvas.width);
-    console.log(canvas.height);
-    console.log(canvas.clientWidth);
-    console.log(canvas.clientHeight);
     const fov = 75;
     const aspect = canvas.width / canvas.height;
     const near = 0.1;
     const far = 100;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 5;
+    camera.position.z = 50;
     camera.updateProjectionMatrix();
     return camera; 
   }
@@ -75,19 +75,30 @@ class Canvas extends React.Component<Props, CanvasState> {
     }
   }
 
-  animateCube(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera) {
-    console.log(this);
 
-    const meshes = scenario1.map(x => BoxToThree(x));
+  animateCube(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera) {
+    //tests();
+
+    const meshes = BoxUtils.scenario1().map(x => BoxUtils.BoxToThree(x));
     const scene = this.scene;
     const light = this.setupLight();
     const canvas = this.canvas.current!;
+
+    const octree = OctreeUtils.Scenario1();
+    console.log(octree);
+    const regionMesh = OctreeUtils.RegionToThree(octree);
+    const octantMeshes = OctreeUtils.OctantsToThree(octree);
+    const octants = octree.getAllOctantsList();
+    const octEdges = octants.map(x => BoxUtils.BoxEdges(x.region));
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 0, 0);
     controls.update();
 
     meshes.forEach(x => scene.add(x));
+    //scene.add(regionMesh);
+    //octantMeshes.forEach(x => scene.add(x));
+    octEdges.forEach(x => scene.add(x));
     scene.add(light);
 
     function renderAnimation() {
