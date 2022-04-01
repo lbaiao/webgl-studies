@@ -149,28 +149,23 @@ export default class Box {
       b1: vertices[1],
       b2: vertices[2],
       b3: vertices[3],
-      t0: vertices[0],
-      t1: vertices[1],
-      t2: vertices[2],
-      t3: vertices[3],
+      t0: vertices[4],
+      t1: vertices[5],
+      t2: vertices[6],
+      t3: vertices[7],
+      }
     }
 
-    console.log('original')
-    console.log(this.originalVertices)
-    console.log('vertices')
-    console.log(this.vertices)
-  }
-
   moveX(pos: number) {
-    this.move([pos, 0, 0]);
+    this.move([pos, this.vertices.b0[1], this.vertices.b0[2]]);
   }
 
   moveY(pos: number) {
-    this.move([0, pos, 0]);
+    this.move([this.vertices.b0[0], pos, this.vertices.b0[2]]);
   }
 
   moveZ(pos: number) {
-    this.move([0, 0, pos]);
+    this.move([this.vertices.b0[0], this.vertices.b0[1], pos]);
   }
 
   //public static randomBox(

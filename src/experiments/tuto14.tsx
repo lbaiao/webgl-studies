@@ -121,6 +121,8 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
       default:
         break;
     }
+    //console.log(this.cBoxPosition);
+    //console.log(this.collisionBox.vertices);
   }
 
   animate(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera) {
@@ -135,7 +137,6 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     const scene = this.scene;
     const collisionScene = new THREE.Scene();
     const light = this.setupLight();
-    const collisionLight = this.setupLight();
     const canvas = this.canvas.current!;
 
     const octree = OctreeUtils.Scenario1();
@@ -161,7 +162,7 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     scene.add(light);
 
     // collision scene
-    collisionScene.add(collisionLight);
+    collisionScene.add(light.clone());
     octEdges.forEach(x => collisionScene.add(x.clone()));
 
     const component: Canvas = this;
@@ -215,9 +216,9 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
       }
 
       requestAnimationFrame(renderAnimation);
+      //
       // logs
       //if (counter % 100 === 0) {
-        //console.log(component.props);
       //}
 
       //counter ++;
