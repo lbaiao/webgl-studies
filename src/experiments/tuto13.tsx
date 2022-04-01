@@ -79,6 +79,7 @@ class Canvas extends React.Component<Props, CanvasState> {
 
   animateCube(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera) {
     //tests();
+    OctreeUtils.Scenario2();
 
     const meshes = BoxUtils.scenario1().map(x => BoxUtils.BoxToThree(x));
     const scene = this.scene;
@@ -87,18 +88,17 @@ class Canvas extends React.Component<Props, CanvasState> {
 
     const octree = OctreeUtils.Scenario1();
     console.log(octree);
-    const regionMesh = OctreeUtils.RegionToThree(octree);
-    const octantMeshes = OctreeUtils.OctantsToThree(octree);
+    //const regionMesh = OctreeUtils.RegionToThree(octree);
+    //const octantMeshes = OctreeUtils.OctantsToThree(octree);
     const octants = octree.getAllOctantsList();
     octants.push(octree);
     const octEdges = octants
       .filter(x => x.nodeType !== NodeType.EMPTY)
       .map(x => BoxUtils.BoxEdges(x.region));
 
-
-    const regionOcts = octants.filter(x => x.nodeType === NodeType.LEAF);
-    const regionMeshes = regionOcts.map(x => BoxUtils.BoxEdges(x.region));
-    console.log(regionOcts);
+    //const regionOcts = octants.filter(x => x.nodeType === NodeType.LEAF);
+    //const regionMeshes = regionOcts.map(x => BoxUtils.BoxEdges(x.region));
+    //console.log(regionOcts);
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 0, 0);

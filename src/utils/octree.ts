@@ -1,5 +1,5 @@
 import Box from './box';
-import { vecSum, vecSub } from './mathUtils';
+import {vecSum, vecSub} from './mathUtils';
 
 type Octants = {
   b0: Octree,
@@ -64,7 +64,7 @@ export default class Octree {
     // bottom octants
     const b0 = Box.fromPoints(region.vertices.b0, center);
     const b1 = Box.fromPoints(
-      vecSum(region.vertices.b0, [halfWidth, 0, 0]), 
+      vecSum(region.vertices.b0, [halfWidth, 0, 0]),
       vecSum(center, [halfWidth, 0, 0])
     );
     const b2 = Box.fromPoints(
@@ -96,13 +96,13 @@ export default class Octree {
     );
 
     this.childrenOctants = {
-      b0: new Octree(b0), 
-      b1: new Octree(b1), 
-      b2: new Octree(b2), 
+      b0: new Octree(b0),
+      b1: new Octree(b1),
+      b2: new Octree(b2),
       b3: new Octree(b3),
-      t0: new Octree(t0), 
-      t1: new Octree(t1), 
-      t2: new Octree(t2), 
+      t0: new Octree(t0),
+      t1: new Octree(t1),
+      t2: new Octree(t2),
       t3: new Octree(t3),
     };
 
@@ -198,12 +198,12 @@ export default class Octree {
     }
   }
 
-  insert(box: Box) : boolean {
+  insert(box: Box): boolean {
     if (!this.region.contains(box)) {
-       return false;
+      return false;
     }
 
-    switch(this.nodeType) {
+    switch (this.nodeType) {
       case NodeType.EMPTY:
         this.objects.push(box);
         this.nodeType = NodeType.LEAF;
@@ -219,5 +219,66 @@ export default class Octree {
     }
 
     return true;
+  }
+
+  private getParentsObjects() {
+    const parentsObjects: Box[] = [];
+    if (this.parent !== undefined) {
+      this.parent.objects.forEach(x => parentsObjects.push(x));
+
+      const gParentObjects = this.parent.getParentsObjects();
+      gParentObjects.forEach(x => parentsObjects.push(x));
+    }
+
+    return parentsObjects;
+  }
+
+  // return the elements that may collide with box
+  public possibleCollisions(box: Box) {
+    if (!this.region.contains(box)) {
+      return null;
+    }
+
+    return this.possibleCollisionsAux(box);
+  }
+
+  private possibleCollisionsAux(box: Box): Box[] {
+    let intersections: Box[] = [];
+
+    switch (this.nodeType) {
+      case NodeType.EMPTY:
+        this.getParentsObjects().forEach(x => intersections.push(x));
+        return intersections;
+
+      case NodeType.LEAF:
+        intersections.push(this.objects[0]);
+        this.getParentsObjects().forEach(x => intersections.push(x));
+        return intersections;
+
+      case NodeType.REGION:
+        let children = this.getChildrenOctantsList();
+        let childContainsBox = false;
+
+        for (let i = 0; i < 8; i++) {
+          let child = children[i];
+          childContainsBox = child.region.contains(box) as boolean;
+
+          if (childContainsBox) {
+            let childIntersections = child.possibleCollisionsAux(box);
+            childIntersections.forEach(x => intersections.push(x));
+
+            break;
+          }
+        }
+
+        if (!childContainsBox) {
+          this.objects.forEach(x => intersections.push(x));
+          this.getParentsObjects().forEach(x => intersections.push(x));
+        }
+        return intersections;
+
+      default:
+        return intersections;
+    }
   }
 }

@@ -28,9 +28,9 @@ export default class Box {
     this.vertices = {b0: [], b1: [], b2: [], b3: [], t0: [], t1: [], t2: [], t3: []};
 
     if (p.length !== 3
-      || width <= 0
-      || depth <= 0
-      || height <= 0) {
+      || width < 0
+      || depth < 0
+      || height < 0) {
       return;
     }
 
