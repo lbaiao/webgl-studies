@@ -44,7 +44,8 @@ export default class OctreeUtils {
   public static Scenario2() {
     const octree = OctreeUtils.Scenario1();
     //const box = new Box([15, 7, 0], 1, 1, 1);
-    const box = new Box([8, 0, 0], 1, 1, 1);
+    //const box = new Box([8, 0, 0], 1, 1, 1);
+    const box = new Box([8, 0, 0], 1, 1, 10);
 
     const collisions = octree.possibleCollisions(box);
     console.log('collisions');

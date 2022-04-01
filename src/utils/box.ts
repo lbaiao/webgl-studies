@@ -1,4 +1,4 @@
-import { vecGreaterOrEqual } from './mathUtils';
+import { vecGreaterOrEqual, vecSum } from './mathUtils';
 
 
 // 0 ------ 3
@@ -23,9 +23,11 @@ export default class Box {
   width: number = 0;
   center: number[] = [];
   vertices: BoxVertices;
+  originalVertices: BoxVertices;
 
   constructor(p: number[], width: number, depth: number, height: number) {
     this.vertices = {b0: [], b1: [], b2: [], b3: [], t0: [], t1: [], t2: [], t3: []};
+    this.originalVertices = {b0: [], b1: [], b2: [], b3: [], t0: [], t1: [], t2: [], t3: []};
 
     if (p.length !== 3
       || width < 0
@@ -59,11 +61,23 @@ export default class Box {
       t3: [p[0] + width, p[1], p[2] + height],
     };
 
+    this.originalVertices = {
+      b0: vecSum(vertices.b0, [0, 0, 0]),
+      b1: vecSum(vertices.b1, [0, 0, 0]),
+      b2: vecSum(vertices.b2, [0, 0, 0]),
+      b3: vecSum(vertices.b3, [0, 0, 0]),
+      t0: vecSum(vertices.t0, [0, 0, 0]),
+      t1: vecSum(vertices.t1, [0, 0, 0]),
+      t2: vecSum(vertices.t2, [0, 0, 0]),
+      t3: vecSum(vertices.t3, [0, 0, 0]),
+    }
+
     this.height = height;
     this.width = width;
     this.depth = depth;
     this.center = center;
     this.vertices = vertices;
+    this.originalVertices = vertices;
   }
 
   public static fromPoints(b0: number[], t2: number[]) {
@@ -95,6 +109,68 @@ export default class Box {
     return (aMin[0] <= bMax[0] && aMax[0] >= bMin[0]) &&
       (aMin[1] <= bMax[1] && aMax[1] >= bMin[1]) &&
       (aMin[2] <= bMax[2] && aMax[2] >= bMin[2]);
+  }
+
+  public getVerticesList() {
+    return [
+      this.vertices.b0,
+      this.vertices.b1,
+      this.vertices.b2,
+      this.vertices.b3,
+      this.vertices.t0,
+      this.vertices.t1,
+      this.vertices.t2,
+      this.vertices.t3,
+    ];
+  }
+
+  public getOriginalVerticesList() {
+    return [
+      this.originalVertices.b0,
+      this.originalVertices.b1,
+      this.originalVertices.b2,
+      this.originalVertices.b3,
+      this.originalVertices.t0,
+      this.originalVertices.t1,
+      this.originalVertices.t2,
+      this.originalVertices.t3,
+    ];
+  }
+
+  move(pos: number[]) {
+    if (pos.length !== 3) {
+      return;
+    }
+
+    const vertices = this.getOriginalVerticesList().map(x => vecSum(x, pos));
+
+    this.vertices = {
+      b0: vertices[0],
+      b1: vertices[1],
+      b2: vertices[2],
+      b3: vertices[3],
+      t0: vertices[0],
+      t1: vertices[1],
+      t2: vertices[2],
+      t3: vertices[3],
+    }
+
+    console.log('original')
+    console.log(this.originalVertices)
+    console.log('vertices')
+    console.log(this.vertices)
+  }
+
+  moveX(pos: number) {
+    this.move([pos, 0, 0]);
+  }
+
+  moveY(pos: number) {
+    this.move([0, pos, 0]);
+  }
+
+  moveZ(pos: number) {
+    this.move([0, 0, pos]);
   }
 
   //public static randomBox(

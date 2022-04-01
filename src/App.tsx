@@ -19,6 +19,7 @@ import Tuto10 from './experiments/tuto10';
 import Tuto11 from './experiments/tuto11';
 import Tuto12 from './experiments/tuto12';
 import Tuto13 from './experiments/tuto13';
+import Tuto14 from './experiments/tuto14';
 
 function App() {
   return (
@@ -75,8 +76,11 @@ function App() {
           {/* cameras */}
           <Route path="/tuto12" element={<Tuto12></Tuto12>} />
 
-          {/* many boxes */}
+          {/* octrees */}
           <Route path="/tuto13" element={<Tuto13></Tuto13>} />
+
+          {/* octree collision detection */}
+          <Route path="/tuto14" element={<Tuto14></Tuto14>} />
 
           <Route path="/users" element={<Users></Users>} />
           <Route path="/" element={<Home></Home>} />

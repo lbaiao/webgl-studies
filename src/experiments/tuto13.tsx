@@ -79,7 +79,7 @@ class Canvas extends React.Component<Props, CanvasState> {
 
   animateCube(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera) {
     //tests();
-    OctreeUtils.Scenario2();
+    //OctreeUtils.Scenario2();
 
     const meshes = BoxUtils.scenario1().map(x => BoxUtils.BoxToThree(x));
     const scene = this.scene;

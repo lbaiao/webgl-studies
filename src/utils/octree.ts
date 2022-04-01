@@ -234,7 +234,7 @@ export default class Octree {
   }
 
   // return the elements that may collide with box
-  public possibleCollisions(box: Box) {
+  public possibleCollisions(box: Box) : Box[] | null{
     if (!this.region.contains(box)) {
       return null;
     }
@@ -272,7 +272,13 @@ export default class Octree {
         }
 
         if (!childContainsBox) {
+          this
+            .getAllOctantsList()
+            .map(x => x.objects)
+            .forEach(x => x.forEach(y => intersections.push(y)));
+
           this.objects.forEach(x => intersections.push(x));
+
           this.getParentsObjects().forEach(x => intersections.push(x));
         }
         return intersections;
