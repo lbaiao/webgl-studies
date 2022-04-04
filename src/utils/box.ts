@@ -100,7 +100,8 @@ export default class Box {
       && vecGreaterOrEqual(this.vertices.t2, box.vertices.t2);
   }
 
-  intersectAABB(boxA: Box, boxB: Box) : boolean {
+  intersectAABB(boxB: Box) : boolean {
+    const boxA = this;
     const aMin = boxA.vertices.b0;
     const aMax = boxA.vertices.t2;
     const bMin = boxB.vertices.b0;
@@ -168,14 +169,19 @@ export default class Box {
     this.move([this.vertices.b0[0], this.vertices.b0[1], pos]);
   }
 
-  //public static randomBox(
-    //minX: number, minY: number,
-    //minZ: number, maxX: number,
-    //maxY: number, maxZ: number,
-    //minLength: number, minWidth: number,
-    //minHeight: number, maxLength: number,
-    //maxWidth: number, maxHeight: number,
-  //) {
-  //}
+  public static randomBox(maxCoord: number, maxLength: number) : Box {
+    const posX = Math.random() * maxCoord;
+    const posY = Math.random() * maxCoord;
+    const posZ = Math.random() * maxCoord;
+    const p0 = [posX, posY, posZ];
+
+    const width = Math.random() * maxLength;
+    const depth = Math.random() * maxLength;
+    const height = Math.random() * maxLength;
+
+    const box = new Box(p0, width, depth, height);
+
+    return box;
+  }
 }
 

@@ -33,6 +33,7 @@ export default class BoxUtils {
 
   public static scenario1(): Box[] {
     return [
+      new Box([10, 0, 12], 1, 1, 1),
       new Box([0, 0, 0], 3, 2, 5),
       new Box([12, 0, 0], 3, 2, 5),
       new Box([10, 3, 0], 2, 1, 4),

@@ -19,6 +19,8 @@ type CanvasState = {
 type CanvasProps = {
   collisionBoxPosition: number[],
   collision: boolean;
+  maxBoxPosition: number;
+  maxBoxLength: number;
 }
 
 enum BoxEvents {
@@ -76,9 +78,9 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     const fov = 75;
     const aspect = canvas.width / canvas.height;
     const near = 0.1;
-    const far = 100;
+    const far = 1000;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 50;
+    camera.position.z = 100;
     camera.updateProjectionMatrix();
 
     return camera; 
@@ -125,22 +127,36 @@ class Canvas extends React.Component<CanvasProps, CanvasState> {
     //console.log(this.collisionBox.vertices);
   }
 
+
   animate(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera) {
-    //OctreeUtils.Scenario2();
+    const nBoxes = 200;
+    const maxCoord = this.props.maxBoxPosition;
+    const maxLength = this.props.maxBoxLength;
+
+    const boxes = []
+    for (let i=0; i < nBoxes; i++) {
+      boxes.push(Box.randomBox(maxCoord, maxLength));
+    }
 
     const meshesMaterial = new THREE.MeshPhongMaterial({
       color: 0x44aa88,
       transparent: true,
       opacity: .6,
     });
-    const meshes = BoxUtils.scenario1().map(x => BoxUtils.BoxToThree(x, meshesMaterial));
+
+    const meshes = boxes.map(x => BoxUtils.BoxToThree(x, meshesMaterial));
     const scene = this.scene;
     const collisionScene = new THREE.Scene();
     const light = this.setupLight();
     const canvas = this.canvas.current!;
 
-    const octree = OctreeUtils.Scenario1();
+    const octreeLength = maxCoord + maxLength + 2;
+    const octreeRegion = new Box([0, 0, 0], octreeLength, octreeLength, octreeLength);
+    const octree = Octree.makeBox(octreeRegion);
+    boxes.forEach(x => octree.insert(x));
+
     console.log(octree);
+
     const octants = octree.getAllOctantsList();
     octants.push(octree);
     const octEdges = octants
@@ -256,12 +272,16 @@ type State = {
 };
 
 
-export default class Tuto14 extends React.Component<Props, State> {
+export default class Tuto15 extends React.Component<Props, State> {
   canvas: React.RefObject<Canvas>;
+  maxBoxPosition: number = 100;
+  maxBoxLength: number = 20;
+  maxCoord: number=1;
 
   constructor(props: Props) {
     super(props);
     this.canvas = React.createRef();
+    this.maxCoord = this.maxBoxPosition + this.maxBoxLength;
 
     this.state = {xPosition: 0, yPosition: 0, zPosition: 0, collision: false};
   }
@@ -299,6 +319,8 @@ export default class Tuto14 extends React.Component<Props, State> {
             ref={this.canvas}
             collisionBoxPosition={[this.state.xPosition, this.state.yPosition, this.state.zPosition]}
             collision={this.state.collision}
+            maxBoxLength={20}
+            maxBoxPosition={100}
           ></Canvas>
         </div>
         <div className='sliders-div'>
@@ -308,13 +330,13 @@ export default class Tuto14 extends React.Component<Props, State> {
               <Checkbox onChange={() => this.handleCheckbox()}></Checkbox>
             </Typography>
           </div>
-          <TestSlider min={0} max={16} step={0.01} name="x position"
+          <TestSlider min={0} max={this.maxCoord} step={0.01} name="x position"
             onChange={(val: number) => this.handleSliderChange(val, BoxEvents.TRANSLATE_X)}
           />
-          <TestSlider min={0} max={16} step={0.01} name="y position"
+          <TestSlider min={0} max={this.maxCoord} step={0.01} name="y position"
             onChange={(val: number) => this.handleSliderChange(val, BoxEvents.TRANSLATE_Y)}
           />
-          <TestSlider min={0} max={16} step={0.01} name="z position"
+          <TestSlider min={0} max={this.maxCoord} step={0.01} name="z position"
             onChange={(val: number) => this.handleSliderChange(val, BoxEvents.TRANSLATE_Z)}
           />
           <TestSlider min={0} max={16} step={0.01} name="width"

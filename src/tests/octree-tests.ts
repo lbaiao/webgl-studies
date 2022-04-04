@@ -1,4 +1,4 @@
-import Octree from "../utils/octree";
+import Octree from "../octree/octree";
 import Box from "../utils/box";
 
 

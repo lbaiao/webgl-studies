@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import {resizeCanvasToDisplaySize} from '../utils/webglUtils';
 import Box from '../utils/box';
 import BoxUtils from '../utils/boxUtils';
-import Octree, { NodeType } from '../utils/octree';
-import OctreeUtils from '../utils/octreeUtils';
+import Octree, { NodeType } from '../octree/octree';
+import OctreeUtils from '../octree/octreeUtils';
 import { tests } from '../tests/tests';
 
 

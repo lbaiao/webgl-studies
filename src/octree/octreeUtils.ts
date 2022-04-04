@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import Octree from "./octree";
-import BoxUtils from "./boxUtils";
-import Box from './box';
+import Octree, { NodeType } from "./octree";
+import BoxUtils from "../utils/boxUtils";
+import Box from '../utils/box';
 
 
 export default class OctreeUtils {
@@ -33,7 +33,7 @@ export default class OctreeUtils {
 
   public static Scenario1() : Octree {
     const ocBox = new Box([0, 0, 0], 16, 16, 16);
-    const octree = Octree.makeBox(ocBox);
+    const octree = Octree.makeBox(ocBox, NodeType.EMPTY, 2);
     const objects = BoxUtils.scenario1();
 
     objects.forEach(x => octree.insert(x));
